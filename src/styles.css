@@ -166,7 +166,6 @@ h3 { font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-
 .chart .crosshair { stroke: var(--border-strong); stroke-width: 1; stroke-dasharray: 3 3; }
 .tooltip {
   position: absolute;
-  transform: translate(-50%, -100%);
   background: var(--card);
   border: 1px solid var(--dark);
   padding: 8px 10px;
@@ -219,3 +218,36 @@ footer a:hover { color: var(--text); }
 header { flex-wrap: wrap; gap: 8px 16px; }
 footer .gh { display: inline-flex; align-items: center; gap: 6px; }
 .badge-wrap { display: flex; justify-content: center; padding: 8px 16px 40px; }
+
+/* ---------- Motion support ---------- */
+.logo { cursor: pointer; user-select: none; }
+.btn, .link, .presets button, .mode, input, footer a {
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+.btn { will-change: transform; }
+.mode .icon { display: grid; place-items: center; }
+
+/* Operation toggles: dark fill grows up from the bottom */
+.presets button.op { position: relative; overflow: hidden; min-width: 44px; font-size: 1.05rem; }
+.presets button.op.active { background: var(--card); color: #fff; border-color: var(--dark); }
+.op-fill { position: absolute; inset: 0; background: var(--dark); transform-origin: bottom; }
+.op-label { position: relative; }
+
+/* Stats tabs: one highlight that slides between them */
+.presets button.tab { position: relative; }
+.presets button.tab.active { background: var(--card); color: #fff; border-color: var(--dark); }
+.tab-highlight { position: absolute; inset: -1px; background: var(--dark); }
+.tab-label { position: relative; }
+
+/* Quiz */
+.qnum { display: inline-block; min-width: 1ch; text-align: center; color: var(--text); }
+.prompt-stage { position: relative; overflow: hidden; }
+.answer input.is-correct { border-color: var(--good); }
+.answer input.is-wrong { border-color: var(--bad); }
+.feedback { padding: 0; margin-top: 0; overflow: hidden; }
+.feedback-inner { padding: 12px 14px; }
+.error { margin: 0; overflow: hidden; }
+
+/* Chart */
+.chart .area { fill: rgba(39, 39, 42, 0.06); }
+.chart .pulse { fill: none; stroke: var(--dark); stroke-width: 1.5; }

@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { FACTORIAL_LIMIT, ARITH_OPS, ARITH_LIMIT } from './math.js';
+import { Button, stagger, rise, spring, ease } from './anim.jsx';
 
 const DEFAULTS = {
   factorial: { count: 10, min: 0, max: 10, feedback: false },
@@ -35,29 +37,46 @@ export default function Settings({ mode, title, initial, onStart, onBack }) {
     set({ ops: s.ops.includes(op) ? s.ops.filter((o) => o !== op) : ARITH_OPS.filter((o) => o === op || s.ops.includes(o)) });
 
   return (
-    <form className="card" onSubmit={submit}>
-      <h2>{title}: settings</h2>
+    <motion.form className="card" onSubmit={submit} variants={stagger(0.06, 0.08)} initial="initial" animate="animate">
+      <motion.h2 variants={rise}>{title}: settings</motion.h2>
 
-      <div className="field">
+      <motion.div className="field" variants={rise}>
         <label htmlFor="count">Number of problems</label>
         <input id="count" type="number" min={1} max={200} value={show(s.count)} onChange={(e) => set({ count: toNum(e.target.value) })} />
-      </div>
+      </motion.div>
 
       {mode === 'arithmetic' && (
-        <div className="field">
+        <motion.div className="field" variants={rise}>
           <label>Operations</label>
           <div className="presets">
-            {ARITH_OPS.map((op) => (
-              <button type="button" key={op} className={s.ops.includes(op) ? 'active' : ''} onClick={() => toggleOp(op)} aria-pressed={s.ops.includes(op)}>
-                {op}
-              </button>
-            ))}
+            {ARITH_OPS.map((op) => {
+              const on = s.ops.includes(op);
+              return (
+                <motion.button
+                  type="button"
+                  key={op}
+                  className={`op ${on ? 'active' : ''}`}
+                  onClick={() => toggleOp(op)}
+                  aria-pressed={on}
+                  whileTap={{ scale: 0.88 }}
+                  transition={spring}
+                >
+                  <motion.span
+                    className="op-fill"
+                    initial={false}
+                    animate={{ scaleY: on ? 1 : 0 }}
+                    transition={{ duration: 0.28, ease }}
+                  />
+                  <span className="op-label">{op}</span>
+                </motion.button>
+              );
+            })}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {hasRange && (
-        <div className="row">
+        <motion.div className="row" variants={rise}>
           <div className="field">
             <label htmlFor="min">{mode === 'factorial' ? 'Minimum n' : 'Smallest number'}</label>
             <input id="min" type="number" min={0} max={limit} value={show(s.min)} onChange={(e) => set({ min: toNum(e.target.value) })} />
@@ -66,27 +85,43 @@ export default function Settings({ mode, title, initial, onStart, onBack }) {
             <label htmlFor="max">{mode === 'factorial' ? 'Maximum n' : 'Largest number'}</label>
             <input id="max" type="number" min={0} max={limit} value={show(s.max)} onChange={(e) => set({ max: toNum(e.target.value) })} />
           </div>
-        </div>
+        </motion.div>
       )}
       {mode === 'arithmetic' && (
-        <p className="hint field-hint">For ÷, the answer and the divisor both fall in this range, so every answer is a whole number.</p>
+        <motion.p className="hint field-hint" variants={rise}>
+          For ÷, the answer and the divisor both fall in this range, so every answer is a whole number.
+        </motion.p>
       )}
 
-      <label className="check">
+      <motion.label className="check" variants={rise}>
         <input type="checkbox" checked={s.feedback} onChange={(e) => set({ feedback: e.target.checked })} />
         Show whether each answer is right before moving on
-      </label>
+      </motion.label>
 
-      {error && <p className="error">{error}</p>}
+      <AnimatePresence initial={false}>
+        {error && (
+          <motion.p
+            key="error"
+            className="error"
+            role="alert"
+            initial={{ opacity: 0, height: 0, x: -6, marginBottom: 0 }}
+            animate={{ opacity: 1, height: 'auto', x: 0, marginBottom: 14 }}
+            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            transition={{ duration: 0.25, ease }}
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
 
-      <div className="actions">
-        <button type="button" className="btn secondary" onClick={onBack}>
+      <motion.div className="actions" variants={rise}>
+        <Button type="button" className="btn secondary" onClick={onBack}>
           Back
-        </button>
-        <button type="submit" className="btn" disabled={!!error}>
-          Start quiz
-        </button>
-      </div>
-    </form>
+        </Button>
+        <Button type="submit" disabled={!!error}>
+          Start quiz →
+        </Button>
+      </motion.div>
+    </motion.form>
   );
 }
