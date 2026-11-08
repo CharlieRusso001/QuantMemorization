@@ -180,7 +180,7 @@ export default function App() {
         charlesrusso@uchicago.edu
       </a>
     </footer>
-# leaking my email so people can tell me how to make ts better
+// leaking my email so people can tell me how to make ts better
     </>
   );
 }
